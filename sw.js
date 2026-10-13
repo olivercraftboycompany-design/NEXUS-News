@@ -1,7 +1,7 @@
 /* NEXUS News service worker: offline app shell + the last news.json for offline reading. */
-const VERSION = 'nxnews-v1';
+const VERSION = 'nxnews-v2';
 const SHELL = `${VERSION}-shell`, DATA = 'nxnews-data';
-const ASSETS = ['./', 'index.html', 'style.css', 'app.js', 'manifest.json', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/maskable-512.png', 'icons/favicon.png', 'icons/apple-touch-icon.png', 'data/news.json'];
+const ASSETS = ['./', 'index.html', 'style.css', 'app.js', 'manifest.json', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/maskable-512.png', 'icons/favicon.png', 'icons/apple-touch-icon.png'];
 const NEWS_KEY = new URL('news-latest.json', self.registration.scope).href;
 
 self.addEventListener('install', e => {
@@ -36,7 +36,7 @@ self.addEventListener('fetch', e => {
         }
         return res;
       } catch (err) {
-        const hit = (await cache.match(NEWS_KEY)) || (await caches.match('data/news.json', { ignoreSearch: true }));
+        const hit = await cache.match(NEWS_KEY);
         if (hit) return new Response(await hit.text(), { headers: { 'Content-Type': 'application/json', 'X-NXNews-Cache': '1' } });
         return new Response(JSON.stringify({ error: 'offline' }), { status: 503, headers: { 'Content-Type': 'application/json' } });
       }
@@ -55,7 +55,7 @@ self.addEventListener('fetch', e => {
   // App files: cache first, refresh in the background.
   e.respondWith((async () => {
     const hit = await caches.match(req, { ignoreSearch: true });
-    const net = fetch(req).then(res => { if (res.ok) caches.open(SHELL).then(c => c.put(req, res.clone())); return res; }).catch(() => null);
+    const net = fetch(req).then(res => { if (res.ok) { const copy = res.clone(); caches.open(SHELL).then(c => c.put(req, copy)).catch(() => {}); } return res; }).catch(() => null);
     if (hit) { e.waitUntil(net); return hit; }
     return (await net) || new Response('', { status: 504 });
   })());

@@ -3,7 +3,6 @@
   'use strict';
   const REPO = 'olivercraftboycompany-design/NEXUS-News';
   const RAW = `https://raw.githubusercontent.com/${REPO}/data/news.json`;
-  const LOCAL = 'data/news.json';
   const LS_DATA = 'nxnews_data_v1', LS_SAVED = 'nxnews_saved_v1', LS_THEME = 'nxnews_theme', LS_TAB = 'nxnews_tab';
   const TABS = [
     ['top', 'Top', '🔥'], ['world', 'World', '🌍'], ['tech', 'Tech', '💻'], ['science', 'Science', '🔬'], ['sports', 'Sports', '🏈'],
@@ -120,7 +119,7 @@
     const before = data ? new Set(data.items.map(i => i.id)) : null;
     let fresh = null; servedFromCache = false;
     const bucket = Math.floor(Date.now() / 60000);
-    for (const url of [RAW + '?t=' + bucket, LOCAL + '?t=' + bucket]) {
+    for (const url of [RAW + '?t=' + bucket]) {
       try { const j = await getJSON(url); if (j && j._cached) { servedFromCache = true; if (!fresh) fresh = j; continue; } if (j && j.items && j.items.length && (!fresh || Date.parse(j.updated) > Date.parse(fresh.updated))) fresh = j; if (fresh && Date.now() - Date.parse(fresh.updated) < 3 * 3600e3) break; } catch {}
     }
     fromFallback = false;
