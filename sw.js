@@ -1,5 +1,5 @@
 /* NEXUS News service worker: offline app shell + the last news.json for offline reading. */
-const VERSION = 'nxnews-v2';
+const VERSION = 'nxnews-v3';
 const SHELL = `${VERSION}-shell`, DATA = 'nxnews-data';
 const ASSETS = ['./', 'index.html', 'style.css', 'app.js', 'manifest.json', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/maskable-512.png', 'icons/favicon.png', 'icons/apple-touch-icon.png'];
 const NEWS_KEY = new URL('news-latest.json', self.registration.scope).href;
